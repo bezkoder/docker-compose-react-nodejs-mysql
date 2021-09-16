@@ -1,10 +1,13 @@
+const Joi = require('../joi/tutorial.joi')
+
+
 module.exports = app => {
   const tutorials = require("../controllers/tutorial.controller.js");
 
   var router = require("express").Router();
 
   // Create a new Tutorial
-  router.post("/", tutorials.create);
+  router.post("/", Joi.validateBody(Joi.schemas.schema), tutorials.create); /**enable validate the post request */
 
   // Retrieve all Tutorials
   router.get("/", tutorials.findAll);
