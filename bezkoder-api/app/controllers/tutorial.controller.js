@@ -3,7 +3,7 @@ const Tutorial = db.tutorials;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Tutorial
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   // Validate request
   if (!req.body.title) {
     res.status(400).send({
@@ -20,11 +20,10 @@ exports.create = (req, res) => {
   };
 
   // Save Tutorial in the database
-  Tutorial.create(tutorial)
-    .then(data => {
+ await Tutorial.create(tutorial).then(async data => {
       res.send(data);
     })
-    .catch(err => {
+    .catch(async err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while creating the Tutorial."
@@ -33,15 +32,13 @@ exports.create = (req, res) => {
 };
 
 // Retrieve all Tutorials from the database.
-exports.findAll = (req, res) => {
+exports.findAll = async (req, res) => {
   const title = req.query.title;
   var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
-  Tutorial.findAll({ where: condition })
-    .then(data => {
+  await Tutorial.findAll({ where: condition }).then(async data => {
       res.send(data);
-    })
-    .catch(err => {
+    }).catch(async err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving tutorials."
@@ -50,14 +47,12 @@ exports.findAll = (req, res) => {
 };
 
 // Find a single Tutorial with an id
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res) => {
   const id = req.params.id;
 
-  Tutorial.findByPk(id)
-    .then(data => {
+  await Tutorial.findByPk(id).then(async data => {
       res.send(data);
-    })
-    .catch(err => {
+    }).catch(async err => {
       res.status(500).send({
         message: "Error retrieving Tutorial with id=" + id
       });
@@ -65,13 +60,12 @@ exports.findOne = (req, res) => {
 };
 
 // Update a Tutorial by the id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
 
-  Tutorial.update(req.body, {
+  await Tutorial.update(req.body, {
     where: { id: id }
-  })
-    .then(num => {
+  }).then(async num => {
       if (num == 1) {
         res.send({
           message: "Tutorial was updated successfully."
@@ -90,13 +84,11 @@ exports.update = (req, res) => {
 };
 
 // Delete a Tutorial with the specified id in the request
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   const id = req.params.id;
-
-  Tutorial.destroy({
+  await Tutorial.destroy({
     where: { id: id }
-  })
-    .then(num => {
+  }).then(async num => {
       if (num == 1) {
         res.send({
           message: "Tutorial was deleted successfully!"
@@ -106,8 +98,7 @@ exports.delete = (req, res) => {
           message: `Cannot delete Tutorial with id=${id}. Maybe Tutorial was not found!`
         });
       }
-    })
-    .catch(err => {
+    }).catch(async err => {
       res.status(500).send({
         message: "Could not delete Tutorial with id=" + id
       });
@@ -115,15 +106,13 @@ exports.delete = (req, res) => {
 };
 
 // Delete all Tutorials from the database.
-exports.deleteAll = (req, res) => {
-  Tutorial.destroy({
+exports.deleteAll = async (req, res) => {
+  await Tutorial.destroy({
     where: {},
     truncate: false
-  })
-    .then(nums => {
+  }).then(async nums => {
       res.send({ message: `${nums} Tutorials were deleted successfully!` });
-    })
-    .catch(err => {
+    }).catch(async err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while removing all tutorials."
@@ -132,12 +121,10 @@ exports.deleteAll = (req, res) => {
 };
 
 // find all published Tutorial
-exports.findAllPublished = (req, res) => {
-  Tutorial.findAll({ where: { published: true } })
-    .then(data => {
+exports.findAllPublished = async (req, res) => {
+ await Tutorial.findAll({ where: { published: true } }).then(async data => {
       res.send(data);
-    })
-    .catch(err => {
+    }).catch(async err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving tutorials."
